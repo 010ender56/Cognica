@@ -174,7 +174,7 @@
                     <span class="theme-icon"></span>
                 </label>
                 <button class="btn icon-btn">Feedback</button>
-                <a href="/index.html" class="btn icon-btn">Home</a>
+                <a href="./index.html" class="btn icon-btn">Home</a>
                 <small>indev</small>
             </div>
         </nav>
@@ -211,9 +211,9 @@
         </div>
     </body>
 
-        <script src="node_modules/localforage/dist/localforage.js"></script>
-        <script src="lib.js"></script>
-        <script>
+        <script src="/node_modules/localforage/dist/localforage.js"></script>
+        <script type="module">
+        import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState, pluralHelper } from "./lib.js";
             let state;
             let isPreview = new URLSearchParams(window.location.search).has("preview") || false;
             let currentSetID = new URLSearchParams(window.location.search).get("set") || "i0";
@@ -452,6 +452,7 @@
               updateNavButtons();
               restoreResponse(currentIndex);
             }
+            window.goToQuestion = goToQuestion;
 
             async function navigate(direction) {
                 const currentSet = state.sets[currentSetID];
@@ -470,6 +471,7 @@
                 updateNavButtons();
                 restoreResponse(currentIndex);
             }
+            window.navigate = navigate;
 
             function updateNavButtons() {
                 const currentSet = state.sets[currentSetID];
@@ -613,7 +615,7 @@
                     <p style="text-align:center">${correctCount} out of ${totalQuestions} correct</p>
                     ${resultsHtml}
                     <div style="display:flex; justify-content:center; margin-top:20px">
-                        <a href="/index.html" class="cta">Return to Home</a>
+                        <a href="./index.html" class="cta">Return to Home</a>
                     </div>
                 `;
 

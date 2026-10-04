@@ -1,4 +1,4 @@
-function save(filename, data, fileType = "text/html") {
+export function save(filename, data, fileType = "text/html") {
   try {
     const blob = new Blob([data], {
       type: fileType,
@@ -18,7 +18,7 @@ function save(filename, data, fileType = "text/html") {
   }
 }
 
-async function copy(text) {
+export async function copy(text) {
   try {
     await navigator.clipboard.writeText(text);
     return true;
@@ -28,7 +28,7 @@ async function copy(text) {
 }
 
 // errorMessage should/needs to be defined already when importing this lib
-function showError(message) {
+export function showError(message) {
   if (typeof errorMessage !== 'undefined') {
     errorMessage.textContent = message;
     errorMessage.classList.remove("hidden");
@@ -37,13 +37,13 @@ function showError(message) {
   }
 }
 
-function hideError() {
+export function hideError() {
   if (typeof errorMessage !== 'undefined') {
     errorMessage.classList.add("hidden");
   }
 }
 
-function validateNumber(value) {
+export function validateNumber(value) {
   const num = Number(value);
   if (isNaN(num) || num <= 0) {
     throw new Error(`Input must be a (positive) number.`);
@@ -51,7 +51,7 @@ function validateNumber(value) {
   return num;
 }
 
-function createImageUploader(container, onFileSelected) {
+export function createImageUploader(container, onFileSelected) {
   container.innerHTML = `
         <input type="file" accept="image/*" style="display: none;" class="image-input" />
         <label class="drop-zone">
@@ -120,7 +120,7 @@ function createImageUploader(container, onFileSelected) {
   };
 }
 
-const fileToBase64 = async (file) => {
+export const fileToBase64 = async (file) => {
   if (!file) return null;
 
   const arrayBuffer = await file.arrayBuffer();
@@ -132,7 +132,7 @@ const fileToBase64 = async (file) => {
   return `data:${file.type};base64,${btoa(binary)}`;
 };
 
-function createSetTemplate(type = "quiz") {
+export function createSetTemplate(type = "quiz") {
   return {
     name: "Untitled Quiz",
     description: "No description provided.",
@@ -142,7 +142,7 @@ function createSetTemplate(type = "quiz") {
   };
 }
 
-function createDevQuiz() {
+export function createDevQuiz() {
   return {
     name: "DEV QUIZ",
     description:
@@ -242,7 +242,7 @@ function createDevQuiz() {
   };
 }
 
-function initState(returnOnly = false) {
+export function initState(returnOnly = false) {
   const initialState = {
     sets: {
       i0: {
@@ -275,11 +275,11 @@ function initState(returnOnly = false) {
   });
 }
 
-function pluralHelper(count, thing) {
+export function pluralHelper(count, thing) {
   return count === 1 ? `1 ${thing}` : `${count} ${thing}s`;
 }
 
-function loadTheme(prefs = "light") {
+export function loadTheme(prefs = "light") {
   const themeToggle = document.getElementById("theme");
   if (themeToggle) {
     themeToggle.checked = (prefs !== "light");
@@ -295,12 +295,12 @@ const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
  * and tracks dirty changes for server syncing.
  */
 
-async function getState() {
+export async function getState() {
     const state = await localforage.getItem("appState");
     return state || initState(true);
 }
 
-async function saveFullState(state) {
+export async function saveFullState(state) {
     await localforage.setItem("appState", state);
 }
 
@@ -309,7 +309,7 @@ async function saveFullState(state) {
  * @param {string} path - e.g., "userPrefs.theme" or "sets.i0.name"
  * @param {any} value - The new value
  */
-async function updateState(path, value) {
+export async function updateState(path, value) {
     const state = await getState();
     const keys = path.split('.');
     let current = state;
@@ -336,7 +336,7 @@ async function updateState(path, value) {
 /**
  * Tracks changes that need to be synced to the server.
  */
-async function queueChange(path, value) {
+export async function queueChange(path, value) {
     const queue = await localforage.getItem("syncQueue") || [];
     
     // Remove any existing pending changes for this same path to avoid redundant updates
@@ -356,7 +356,7 @@ async function queueChange(path, value) {
 /**
  * Returns all items that are currently 'dirty' (not synced).
  */
-async function getDirtyItems() {
+export async function getDirtyItems() {
     const queue = await localforage.getItem("syncQueue") || [];
     return queue.filter(item => !item.synced);
 }
@@ -364,7 +364,7 @@ async function getDirtyItems() {
 /**
  * Marks a specific change as synced.
  */
-async function markAsSynced(changeId) {
+export async function markAsSynced(changeId) {
     const queue = await localforage.getItem("syncQueue") || [];
     const updatedQueue = queue.map(item => {
         if (item.id === changeId) return { ...item, synced: true };
@@ -377,7 +377,7 @@ async function markAsSynced(changeId) {
  * Placeholder for server sync logic.
  * When implemented, this will iterate through dirty items and push to API.
  */
-async function syncWithServer() {
+export async function syncWithServer() {
     if (!navigator.onLine) {
         console.log("Offline: Sync postponed.");
         return;

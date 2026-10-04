@@ -227,7 +227,7 @@
                     <span class="theme-icon"></span>
                 </label>
                 <button class="btn icon-btn">Feedback</button>
-                <a href="/index.html" class="btn icon-btn">Home</a>
+                <a href="./index.html" class="btn icon-btn">Home</a>
                 <small>indev</small>
             </div>
         </nav>
@@ -341,9 +341,10 @@
                 <button class="cta" id="save-question-btn">Save Question</button>
             </section>
         </div>
-        <script src="node_modules/localforage/dist/localforage.js"></script>
-        <script src="lib.js"></script>
-        <script>
+        <script src="/node_modules/localforage/dist/localforage.js"></script>
+        <script type="module">
+            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState } from "./lib.js";
+
             document.addEventListener("DOMContentLoaded", async () => {
                 // STATE
                 let state = await getState();
@@ -464,14 +465,13 @@
                             });
 
                             const imageContainer = document.createElement("div");
-                            const uploader = createImageUploader(imageContainer);
+                            const uploader = createImageUploader(imageContainer, async (file) => {
+                                opt.image = await fileToBase64(file);
+                            });
                             if (opt.image) {
                                 uploader.previewBox.style.backgroundImage = `url('${opt.image}')`;
                                 uploader.uploadText.style.display = "none";
                             }
-                            uploader.onFileSelected(async (file) => {
-                                opt.image = await fileToBase64(file);
-                            });
 
                             row.appendChild(checkbox);
                             row.appendChild(imageContainer);
@@ -560,6 +560,8 @@
                         quizInfoUploader.previewBox.style.backgroundImage = "";
                         quizInfoUploader.uploadText.style.display = "block";
                     }
+                    quizInfoUploader.input.value = "";
+                    quizInfoUploader.resetCleared();
 
                     oneWayOnly.checked = !quiz.oneWay;
                     quizOnlyOptions.style.display = quiz.type === "quiz" ? "block" : "none";
@@ -626,6 +628,8 @@
                         questionUploader.previewBox.style.backgroundImage = "";
                         questionUploader.uploadText.style.display = "block";
                     }
+                    questionUploader.input.value = "";
+                    questionUploader.resetCleared();
 
                     renderOptionsUI(q);
                     renderQuestionList();
@@ -747,7 +751,7 @@
                             state.currentSet = remaining[0];
                         }
                         await saveState();
-                        window.location.href = "index.html";
+                        window.location.href = "./index.html";
                     }
                 });
 
@@ -761,11 +765,13 @@
                 });
 
                 previewQuizBtn.addEventListener("click", () => {
-                    window.location.href = `/set.html?set=${state.currentSet}&preview`;
+                    window.location.href = `./set.html?set=${state.currentSet}&preview`;
                 });
 
                 // INITIALIZE
                 async function initializeApp() {
+                    // load theme
+                    loadTheme(state.userPrefs.theme);
                     const setParam = new URLSearchParams(window.location.search).get("set");
                     if (setParam) {
                         state.currentSet = setParam;

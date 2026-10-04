@@ -153,7 +153,7 @@
                     <span class="theme-icon"></span>
                 </label>
                 <button class="btn icon-btn">Feedback</button>
-                <a href="/index.html" class="btn icon-btn">Home</a>
+                <a href="./index.html" class="btn icon-btn">Home</a>
                 <small>indev</small>
             </div>
         </nav>
@@ -188,9 +188,10 @@
         <button class="create-btn">Create New...</button>
     </body>
 
-        <script src="node_modules/localforage/dist/localforage.js"></script>
-        <script src="lib.js"></script>
-        <script>
+        <script src="/node_modules/localforage/dist/localforage.js"></script>
+        <script type="module">
+            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState } from "./lib.js";
+
             const grid = document.getElementById("quizGrid");
             const greetingHeader = document.getElementById("greeting-header");
             const noQuizzesMsg = document.getElementById("noQuizzesMsg");
@@ -204,7 +205,7 @@
             let state;
             let sneezes = 0;
 
-            function initApp() {
+            async function initApp() {
                 const hours = new Date().getHours();
 
                 // update greeting header
@@ -233,42 +234,30 @@
                 }
 
                 // now we can load the quizzes from localforage
-                localforage.getItem("appState", function (err, value) {
-                    if (err) {
-                        initState();
+                state = await getState();
+                
+                if (state) {
+                    loadTheme(state.userPrefs.theme);
+
+                    // now we begin loading
+                    for (const [key, currentSet] of Object.entries(state.sets)) {
+                        const card = document.createElement("div");
+                        card.className = "quiz-card";
+
+                        card.innerHTML = `
+                      <img src="${currentSet.image || "assets/placeholder.png"}" alt="Picutre for ${currentSet.name}">
+                      <span class="quiz-type">${currentSet.type}</span>
+                      <span class="quiz-title">${currentSet.name}</span>
+                      <p class="quiz-desc">${currentSet.description}</p>
+                    `;
+
+                        card.addEventListener("click", () => {
+                            window.location.href = `./editor.html?set=${key}`;
+                        });
+
+                        grid.appendChild(card);
                     }
-                });
-
-                localforage
-                    .getItem("appState")
-                    .then(function (state) {
-                        if (state) {
-                            loadTheme(state.userPrefs.theme);
-                            
-                            // now we begin loading
-                            for (const [key, currentSet] of Object.entries(state.sets)) {
-                                const card = document.createElement("div");
-                                card.className = "quiz-card";
-
-                                card.innerHTML = `
-                              <img src="${currentSet.image || "assets/placeholder.png"}" alt="Picutre for ${currentSet.name}">
-                              <span class="quiz-type">${currentSet.type}</span>
-                              <span class="quiz-title">${currentSet.name}</span>
-                              <p class="quiz-desc">${currentSet.description}</p>
-                            `;
-
-                                card.addEventListener("click", () => {
-                                    window.location.href = `/editor.html?set=${key}`;
-                                });
-
-                                grid.appendChild(card);
-                            }
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error("Error loading state:", err);
-                    });
-
+                }
                 // event listeners for create buttons
                 createNewBtn.addEventListener("click", () => {
                     createOptionsContainer.classList.toggle("hidden");
@@ -280,15 +269,15 @@
                 });
 
                 createFlashcardsBtn.addEventListener("click", () => {
-                    window.location.href = "/editor.html?type=flashcards";
+                    window.location.href = "./editor.html?type=flashcards";
                 });
 
                 createQuizBtn.addEventListener("click", () => {
-                    window.location.href = "/editor.html?type=quiz";
+                    window.location.href = "./editor.html?type=quiz";
                 });
 
                 createDevQuizBtn.addEventListener("click", () => {
-                    window.location.href = "/editor.html?type=devquiz";
+                    window.location.href = "./editor.html?type=devquiz";
                 });
 
                 document.getElementById("devReset").addEventListener("click", () => {
@@ -316,7 +305,7 @@
                 });
             }
 
-            initApp();
+            await initApp();
         </script>
     </body>
 </html>
