@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Cognica</title>
+        <style>body{min-height:100vh;position:relative}.quiz-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));align-items:start;gap:20px;margin-top:20px;display:grid}.quiz-card{background:var(--card);border:1px solid var(--border-main);cursor:pointer;border-radius:10px;flex-direction:column;gap:10px;padding:12px;transition:transform .15s;display:flex}.quiz-card:hover{transform:translateY(-3px)}.quiz-card:hover .quiz-desc{white-space:normal;display:block;overflow:visible}.quiz-card img{object-fit:cover;border-radius:6px;width:100%;height:140px}.quiz-title{font-size:1rem;font-weight:600}.quiz-type{color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-size:.75rem;font-weight:600}.quiz-desc{color:var(--muted);text-overflow:ellipsis;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.85rem;display:-webkit-box;overflow:hidden}.create-btn{background:var(--accent);color:var(--card);cursor:pointer;border:none;border-radius:8px;padding:12px 20px;font-size:.9rem;font-weight:600;transition:box-shadow .1s linear,transform .1s ease-in-out;position:fixed;bottom:24px;right:24px}.create-btn:hover{box-shadow:3px 3px 0 var(--muted);transform:translateY(-3px)}.create-btn:active{box-shadow:none;transform:none}.menu-item{cursor:pointer;font-size:.85rem}.create-options-container{flex-direction:column;gap:10px;transition:opacity .2s,transform .2s;display:flex;position:fixed;bottom:80px;right:24px}.create-option-btn{text-align:center;cursor:pointer;background-color:var(--bg);transition:transform .2s,box-shadow .2s,background-color .2s}.create-option-btn:hover{background-color:var(--bg);box-shadow:0 5px 5px var(--border-main);transform:translateY(-2px)}.create-option-btn:active{transform:translateY(0);box-shadow:0 2px 5px #0000001a}#devContainer{border:2px dashed var(--border-main);border-radius:8px;padding:20px;display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}</style>
+      <script type="module" crossorigin src="/assets/home-C-jdx6e6.js"></script>
+      <link rel="modulepreload" crossorigin href="/assets/lib-DIhVFdeO.js">
+      <link rel="stylesheet" crossorigin href="/assets/lib-Cvjez-a-.css">
+    </head>
+
+    <body>
+        <!-- Top Bar will be generated programmatically -->
+
+        <header>
+            <h1 id="greeting-header">Good morning</h1>
+            <p id="greeting-paragraph">Let's make today productive!</p>
+        </header>
+
+        <!-- Grid of quizzes -->
+        <div class="quiz-grid" id="quizGrid">
+            <p id="noQuizzesMsg" style="display: none">No quizzes found. Create a new one!</p>
+        </div>
+
+        <div id="devContainer">
+            <h2>Dev Panel</h2>
+            <p>If you aren't a dev, then <b>get out now.</b></p>
+
+            <hr />
+
+            <button class="btn" id="newDevQuiz">Make a Dev Quiz</button>
+            <button class="btn danger" id="devReset">Reset <code>state</code></button>
+            <button class="btn" id="closeDev">Un-sneeze</button>
+        </div>
+
+        <!-- Create Button -->
+        <div class="create-options-container hidden">
+            <button class="btn create-option-btn" id="newImport">Import</button>
+            <button class="btn create-option-btn" id="newFlashcard">Flashcards</button>
+            <button class="btn create-option-btn" id="newQuiz">Quiz</button>
+        </div>
+        <button class="create-btn">Create New...</button>
+
+        <script src="/node_modules/localforage/dist/localforage.js"></script>
+    </body>
+</html>

@@ -1,0 +1,1 @@
+import{a as e,c as t,o as n}from"./lib-DIhVFdeO.js";var r=e();document.body.prepend(r);var i;async function a(){i=await n(),i&&t(i.userPrefs.theme)}await a();

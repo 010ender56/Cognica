@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Practicing</title>
+        <style>body{min-height:100vh;position:relative}.container{border:1px solid var(--border-main);background-color:var(--surface);border-radius:8px;flex-direction:column;max-width:800px;min-height:80vh;margin:40px auto;padding:20px;display:flex}#quiz-container{flex-direction:column;flex:1;display:flex}#question-content{flex:1}.quiz-nav{border-top:1px solid var(--border-main);justify-content:space-between;margin-top:30px;padding-top:20px;display:flex}.question-container{animation:.3s ease-out fadeIn}.question-container h3{margin-bottom:20px;font-size:1.2rem}.answer-container{flex-direction:column;gap:10px;display:flex}.answer-option{border:1px solid var(--border-main);background-color:var(--card);cursor:pointer;border-radius:6px;align-items:flex-start;gap:12px;padding:12px;transition:background-color .2s,border-color .2s;display:flex}.answer-option:hover{background-color:var(--surface-lighter);border-color:var(--accent)}.answer-option input{margin-top:3px}.answer-option span{font-size:.9rem;line-height:1.4}.short-answer-input,.long-answer-input{border:1px solid var(--border-main);background-color:var(--card);width:100%;color:var(--text);border-radius:6px;padding:12px;font-family:inherit;font-size:.9rem}.long-answer-input{resize:vertical;min-height:120px}.question-image{border-radius:8px;margin-bottom:20px}.option-image{border:1px solid var(--border-main);border-radius:4px;margin-top:10px}.review-list{flex-direction:column;gap:10px;margin:20px 0;display:flex}.review-item{border:1px solid var(--border-main);background-color:var(--card);cursor:pointer;border-radius:6px;align-items:center;gap:12px;padding:12px;transition:transform .15s;display:flex}.review-item:hover{transform:translateY(-3px)}.review-item img{object-fit:cover;border-radius:4px;flex-shrink:0;width:40px;height:40px}.review-item .title{flex:1;font-size:.9rem;font-weight:500}.review-item .status{background-color:var(--surface-lighter);color:var(--red);border-radius:12px;padding:2px 8px;font-size:.8rem}.review-item .status.answered{background-color:var(--accent-light);color:var(--accent)}.locked-answer{opacity:.8;border-style:dashed!important}</style>
+      <script type="module" crossorigin src="/assets/quiz-DDCeh0hK.js"></script>
+      <link rel="modulepreload" crossorigin href="/assets/lib-DIhVFdeO.js">
+      <link rel="stylesheet" crossorigin href="/assets/lib-Cvjez-a-.css">
+    </head>
+
+    <body>
+        <!-- Top Bar -->
+        <!-- Top Bar will be generated programmatically -->
+
+        <div class="container">
+            <div id="start-screen">
+                <h1 id="set-name">Quiz Name</h1>
+                <p id="set-desc">Quiz Description</p>
+                <small id="preview-mode">Preview mode</small>
+
+                <p id="set-info">0 questions · Estimated 0 mins · Quiz</p>
+                <button class="cta" id="start">Start</button>
+            </div>
+
+            <div id="quiz-container" style="display: none;">
+                <div id="question-view">
+                    <div id="question-content"></div>
+
+                    <div class="quiz-nav">
+                        <button class="back-btn btn">
+                            Back &larr;
+                        </button>
+                        <button class="skip-btn btn">
+                            Skip
+                        </button>
+                        <button class="next-btn cta">
+                            Next &rarr;
+                        </button>
+                    </div>
+                </div>
+                <div id="review-view" style="display: none;"></div>
+                <div id="complete-view" style="display: none;"></div>
+            </div>
+        </div>
+    </body>
+
+        <script src="/node_modules/localforage/dist/localforage.js"></script>
+    </body>
+</html>
