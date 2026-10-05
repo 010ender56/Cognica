@@ -1,4 +1,4 @@
-:root {
+:root[data-theme="light"] {
     --bg: #fdfdfd;
     --card: #ffffff;
     --translucent-surface: rgba(255, 255, 255, 0.6);
@@ -17,7 +17,7 @@
     color-scheme: light;
 }
 
-:root:has(#theme:checked) {
+:root[data-theme="dark"] {
     --bg: #0d0d0d;
     --card: #1a1a1a;
     --translucent-surface: rgba(26, 26, 26, 0.7);
@@ -599,6 +599,13 @@ hr {
     animation: fadeIn 0.4s ease-out;
 }
 
+.complete-results {
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
 .score-circle {
     width: 150px;
     height: 150px;
@@ -612,9 +619,47 @@ hr {
     margin: 20px auto;
 }
 
-.complete-results {
-    width: 100%;
-    max-width: 600px;
-    text-align: left;
-    margin-bottom: 30px;
+.skeleton {
+    background: linear-gradient(90deg, var(--surface-lighter) 25%, var(--surface) 50%, var(--surface-lighter) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    color: transparent !important;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.toggle-group {
+    display: inline-flex;
+    background-color: var(--surface-darker);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border-main);
+}
+
+.toggle-btn {
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.toggle-btn:hover {
+    color: var(--text);
+}
+
+.toggle-btn.active {
+    background-color: var(--card);
+    color: var(--accent);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
 }

@@ -220,17 +220,7 @@
     </head>
 
     <body>
-        <nav class="top-bar">
-            <div class="top-bar-content">
-                <label class="theme-toggle">
-                    <input type="checkbox" id="theme" />
-                    <span class="theme-icon"></span>
-                </label>
-                <button class="btn icon-btn">Feedback</button>
-                <a href="./index.html" class="btn icon-btn">Home</a>
-                <small>indev</small>
-            </div>
-        </nav>
+        <!-- Top Bar will be generated programmatically -->
 
         <dialog id="edit-set-dialog">
             <div class="dialog-container">
@@ -343,9 +333,12 @@
         </div>
         <script src="/node_modules/localforage/dist/localforage.js"></script>
         <script type="module">
-            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState } from "./lib.js";
+            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState, generateNavbar } from "./lib.js";
 
             document.addEventListener("DOMContentLoaded", async () => {
+                const nav = generateNavbar();
+                document.body.prepend(nav);
+
                 // STATE
                 let state = await getState();
 
@@ -765,7 +758,7 @@
                 });
 
                 previewQuizBtn.addEventListener("click", () => {
-                    window.location.href = `./set.html?set=${state.currentSet}&preview`;
+                    window.location.href = `./quiz.html?set=${state.currentSet}&preview`;
                 });
 
                 // INITIALIZE

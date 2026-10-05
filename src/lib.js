@@ -29,7 +29,7 @@ export async function copy(text) {
 
 // errorMessage should/needs to be defined already when importing this lib
 export function showError(message) {
-  if (typeof errorMessage !== 'undefined') {
+  if (typeof errorMessage !== "undefined") {
     errorMessage.textContent = message;
     errorMessage.classList.remove("hidden");
   } else {
@@ -38,7 +38,7 @@ export function showError(message) {
 }
 
 export function hideError() {
-  if (typeof errorMessage !== 'undefined') {
+  if (typeof errorMessage !== "undefined") {
     errorMessage.classList.add("hidden");
   }
 }
@@ -133,6 +133,10 @@ export const fileToBase64 = async (file) => {
 };
 
 export function createSetTemplate(type = "quiz") {
+  if(type === "devquiz") {
+    return createDevQuiz();
+  }
+  
   return {
     name: "Untitled Quiz",
     description: "No description provided.",
@@ -279,29 +283,85 @@ export function pluralHelper(count, thing) {
   return count === 1 ? `1 ${thing}` : `${count} ${thing}s`;
 }
 
-export function loadTheme(prefs = "light") {
-  const themeToggle = document.getElementById("theme");
-  if (themeToggle) {
-    themeToggle.checked = (prefs !== "light");
+export function generateNavbar() {
+  const nav = document.createElement("nav");
+  nav.className = "top-bar";
+
+  const pageMap = {
+    "index.html": "home",
+    "settings.html": "settings",
+    "quiz.html": "quiz",
+    "editor.html": "editor",
+  };
+
+  const pathname = window.location.pathname;
+  const currentPage = pathname.substring(pathname.lastIndexOf("/") + 1) || "index.html";
+  const searchParams = new URLSearchParams(window.location.search);
+  
+  const backValue = pageMap[currentPage] || "home";
+  const setParam = searchParams.get("set");
+  
+  let settingsHref = `./settings.html?back=${backValue}`;
+  if (setParam) {
+    settingsHref += `&set=${setParam}`;
   }
-  console.log("loaded", prefs);
+
+  nav.innerHTML = `
+    <div class="top-bar-content">
+        <button class="btn icon-btn">Feedback</button>
+        <a href="./index.html" class="btn icon-btn">Home</a>
+        <a href="${settingsHref}" class="btn icon-btn">Settings</a>
+        <small>indev</small>
+    </div>
+  `;
+  return nav;
 }
 
-const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+export function loadTheme(prefs = "light") {
+  const root = document.documentElement;
+  let targetTheme = prefs;
+
+  // 1. Handle system default preference
+  if (prefs === "system-default") {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    targetTheme = mediaQuery.matches ? "dark" : "light";
+
+    mediaQuery.addEventListener("change", (e) => {
+      if (document.documentElement.getAttribute("data-theme-mode") === "system-default") {
+        root.setAttribute("data-theme", e.matches ? "dark" : "light");
+      }
+    });
+  }
+
+  if (prefs === "time") {
+    const hour = new Date().getHours();
+    targetTheme = hour >= 18 || hour < 6 ? "dark" : "light";
+  }
+
+  root.setAttribute("data-theme", targetTheme);
+  root.setAttribute("data-theme-mode", prefs);
+
+  console.log("Loaded theme:", targetTheme, `(${prefs})`);
+}
+
+export function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 /**
  * STATE MANAGEMENT SYSTEM
- * Intercepts updates to state, handles local persistence, 
+ * Intercepts updates to state, handles local persistence,
  * and tracks dirty changes for server syncing.
  */
 
 export async function getState() {
-    const state = await localforage.getItem("appState");
-    return state || initState(true);
+  const state = await localforage.getItem("appState");
+  return state || initState(true);
 }
 
 export async function saveFullState(state) {
-    await localforage.setItem("appState", state);
+  await localforage.setItem("appState", state);
 }
 
 /**
@@ -310,67 +370,67 @@ export async function saveFullState(state) {
  * @param {any} value - The new value
  */
 export async function updateState(path, value) {
-    const state = await getState();
-    const keys = path.split('.');
-    let current = state;
+  const state = await getState();
+  const keys = path.split(".");
+  let current = state;
 
-    for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-        if (!current[key]) current[key] = {};
-        current = current[key];
-    }
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!current[key]) current[key] = {};
+    current = current[key];
+  }
 
-    const lastKey = keys[keys.length - 1];
-    const oldValue = current[lastKey];
-    current[lastKey] = value;
+  const lastKey = keys[keys.length - 1];
+  const oldValue = current[lastKey];
+  current[lastKey] = value;
 
-    // Only mark dirty and save if value actually changed
-    if (JSON.stringify(oldValue) !== JSON.stringify(value)) {
-        await saveFullState(state);
-        await queueChange(path, value);
-    }
-    
-    return state;
+  // Only mark dirty and save if value actually changed
+  if (JSON.stringify(oldValue) !== JSON.stringify(value)) {
+    await saveFullState(state);
+    await queueChange(path, value);
+  }
+
+  return state;
 }
 
 /**
  * Tracks changes that need to be synced to the server.
  */
 export async function queueChange(path, value) {
-    const queue = await localforage.getItem("syncQueue") || [];
-    
-    // Remove any existing pending changes for this same path to avoid redundant updates
-    const filteredQueue = queue.filter(item => item.path !== path);
-    
-    filteredQueue.push({
-        id: crypto.randomUUID(),
-        path: path,
-        value: value,
-        timestamp: Date.now(),
-        synced: false
-    });
-    
-    await localforage.setItem("syncQueue", filteredQueue);
+  const queue = (await localforage.getItem("syncQueue")) || [];
+
+  // Remove any existing pending changes for this same path to avoid redundant updates
+  const filteredQueue = queue.filter((item) => item.path !== path);
+
+  filteredQueue.push({
+    id: crypto.randomUUID(),
+    path: path,
+    value: value,
+    timestamp: Date.now(),
+    synced: false,
+  });
+
+  await localforage.setItem("syncQueue", filteredQueue);
 }
 
 /**
  * Returns all items that are currently 'dirty' (not synced).
  */
 export async function getDirtyItems() {
-    const queue = await localforage.getItem("syncQueue") || [];
-    return queue.filter(item => !item.synced);
+  const queue = (await localforage.getItem("syncQueue")) || [];
+  return queue.filter((item) => !item.synced);
 }
 
 /**
  * Marks a specific change as synced.
  */
 export async function markAsSynced(changeId) {
-    const queue = await localforage.getItem("syncQueue") || [];
-    const updatedQueue = queue.map(item => {
-        if (item.id === changeId) return { ...item, synced: true };
-        return item;
-    });
-    await localforage.setItem("syncQueue", updatedQueue);
+  const queue = (await localforage.getItem("syncQueue")) || [];
+  const updatedQueue = queue.map((item) => {
+    if (item.id === changeId) return { ...item, synced: true };
+    return item;
+  });
+  await localforage.setItem("syncQueue", updatedQueue);
 }
 
 /**
@@ -378,23 +438,23 @@ export async function markAsSynced(changeId) {
  * When implemented, this will iterate through dirty items and push to API.
  */
 export async function syncWithServer() {
-    if (!navigator.onLine) {
-        console.log("Offline: Sync postponed.");
-        return;
-    }
+  if (!navigator.onLine) {
+    console.log("Offline: Sync postponed.");
+    return;
+  }
 
-    const dirty = await getDirtyItems();
-    if (dirty.length === 0) return;
+  const dirty = await getDirtyItems();
+  if (dirty.length === 0) return;
 
-    console.log(`Syncing ${dirty.length} changes to server...`);
-    
-    // Default behavior for now: just mark them as synced since server is not ready
-    for (const change of dirty) {
-        // await api.patch(change.path, change.value);
-        await markAsSynced(change.id);
-    }
-    console.log("Sync complete.");
+  console.log(`Syncing ${dirty.length} changes to server...`);
+
+  // Default behavior for now: just mark them as synced since server is not ready
+  for (const change of dirty) {
+    // await api.patch(change.path, change.value);
+    await markAsSynced(change.id);
+  }
+  console.log("Sync complete.");
 }
 
 // Listen for online event to trigger sync
-window.addEventListener('online', syncWithServer);
+window.addEventListener("online", syncWithServer);

@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Quiz Homepage</title>
+        <title>Cognica</title>
         <link rel="stylesheet" href="style.css" />
         <style>
             body {
@@ -145,18 +145,7 @@
     </head>
 
     <body>
-        <!-- Top Bar -->
-        <nav class="top-bar">
-            <div class="top-bar-content">
-                <label class="theme-toggle">
-                    <input type="checkbox" id="theme" />
-                    <span class="theme-icon"></span>
-                </label>
-                <button class="btn icon-btn">Feedback</button>
-                <a href="./index.html" class="btn icon-btn">Home</a>
-                <small>indev</small>
-            </div>
-        </nav>
+        <!-- Top Bar will be generated programmatically -->
 
         <header>
             <h1 id="greeting-header">Good morning</h1>
@@ -186,11 +175,13 @@
             <button class="btn create-option-btn" id="newQuiz">Quiz</button>
         </div>
         <button class="create-btn">Create New...</button>
-    </body>
 
         <script src="/node_modules/localforage/dist/localforage.js"></script>
         <script type="module">
-            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState } from "./lib.js";
+            import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState, generateNavbar } from "./lib.js";
+
+            const nav = generateNavbar();
+            document.body.prepend(nav);
 
             const grid = document.getElementById("quizGrid");
             const greetingHeader = document.getElementById("greeting-header");

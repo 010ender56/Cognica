@@ -167,22 +167,12 @@
 
     <body>
         <!-- Top Bar -->
-        <nav class="top-bar">
-            <div class="top-bar-content">
-                <label class="theme-toggle">
-                    <input type="checkbox" id="theme" />
-                    <span class="theme-icon"></span>
-                </label>
-                <button class="btn icon-btn">Feedback</button>
-                <a href="./index.html" class="btn icon-btn">Home</a>
-                <small>indev</small>
-            </div>
-        </nav>
+        <!-- Top Bar will be generated programmatically -->
 
         <div class="container">
             <div id="start-screen">
-                <h1 id="set-name">Set Name</h1>
-                <p id="set-desc">Set Description</p>
+                <h1 id="set-name">Quiz Name</h1>
+                <p id="set-desc">Quiz Description</p>
                 <small id="preview-mode">Preview mode</small>
 
                 <p id="set-info">0 questions · Estimated 0 mins · Quiz</p>
@@ -213,10 +203,13 @@
 
         <script src="/node_modules/localforage/dist/localforage.js"></script>
         <script type="module">
-        import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState, pluralHelper } from "./lib.js";
+        import { loadTheme, createImageUploader, fileToBase64, createSetTemplate, initState, getState, saveFullState, updateState, pluralHelper, generateNavbar } from "./lib.js";
+
+        const nav = generateNavbar();
+        document.body.prepend(nav);
             let state;
             let isPreview = new URLSearchParams(window.location.search).has("preview") || false;
-            let currentSetID = new URLSearchParams(window.location.search).get("set") || "i0";
+            let currentSetID = new URLSearchParams(window.location.search).get("set");
 
             const setNameEl = document.getElementById("set-name");
             const setDescEl = document.getElementById("set-desc");
@@ -257,6 +250,7 @@
                 let currentSet = state.sets[currentSetID];
                 if (!currentSet) {
                     alert("Set not found!");
+                    window.location.href = "./index.html";
                     return;
                 }
                 console.log("Set data found:", currentSet);
@@ -281,11 +275,7 @@
                 setNameEl.textContent = currentSet.name || "Set Name";
                 setDescEl.textContent = currentSet.description || "Set Description";
 
-                if(currentSet.type === "quiz") {
-                  setInfoEl.textContent = `${pluralHelper(currentSet.questions.length, "question")} · Estimated ${currentSet.questions.length * 2} mins · Quiz`;
-                } else if (currentSet.type === "flashcards") {
-                  setInfoEl.textContent = `${pluralHelper(currentSet.questions.length, "card")} · Estimated ${currentSet.questions.length * .2} mins · Flashcards`;
-                }
+                setInfoEl.textContent = `${pluralHelper(currentSet.questions.length, "question")} · Estimated ${currentSet.questions.length * 2} mins · Quiz`;
 
                 startBtn.addEventListener("click", startQuiz);
                 backBtn.addEventListener("click", () => navigate(-1));
