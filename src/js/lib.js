@@ -1,3 +1,5 @@
+import localforage from "localforage";
+
 export function save(filename, data, fileType = "text/html") {
   try {
     const blob = new Blob([data], {
@@ -274,7 +276,7 @@ export function initState(returnOnly = false) {
     return initialState;
   }
 
-  localforage.setItem("appState", initialState).then(function () {
+  saveFullState(initialState).then(function () {
     console.log("Initial state created:", initialState);
   });
 }

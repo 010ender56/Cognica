@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  root: "./src",
+  root: "./src", 
   build: {
     rollupOptions: {
       input: {
@@ -14,4 +14,5 @@ export default defineConfig({
       },
     },
   },
+  outDir: "../dist", 
 });

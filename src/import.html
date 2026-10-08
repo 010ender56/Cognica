@@ -3,13 +3,8 @@
     <head>
         <meta charset="UTF-8" />
         <title>Import</title>
-        <link rel="stylesheet" href="style.css" />
-        <style>
-            body {
-                position: relative;
-                min-height: 100vh;
-            }
-        </style>
+        <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/import.css" />
     </head>
 
     <body>
@@ -25,35 +20,6 @@
             
         </main>
 
-        <script src="/node_modules/localforage/dist/localforage.js"></script>
-        <script type="module">
-            import {
-                loadTheme,
-                createImageUploader,
-                fileToBase64,
-                createSetTemplate,
-                initState,
-                getState,
-                saveFullState,
-                updateState,
-                generateNavbar,
-            } from "./lib.js";
-
-            const nav = generateNavbar();
-            document.body.prepend(nav);
-
-            let state;
-
-            async function initApp() {
-                state = await getState();
-                if (state) {
-                    loadTheme(state.userPrefs.theme);
-                }
-
-                
-            }
-
-            await initApp();
-        </script>
+        <script src="/js/import.js" type="module"></script>
     </body>
 </html>
