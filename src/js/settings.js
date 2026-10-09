@@ -36,23 +36,26 @@ const SETTINGS_CONFIG = {
         ],
         description: "Switch between light and dark modes.",
       },
+      {
+        id: "reducedMotion",
+        label: "Reduced Motion/Animations",
+        type: "checkbox",
+        description: "No flashcard flip animations, page transitions, etc.",
+      },
     ],
   },
   experience: {
     label: "Experience",
     settings: [
       {
-        id: "difficulty",
-        label: "Default Difficulty",
-        type: "select",
-        options: ["easy", "medium", "hard"],
-        description: "The default difficulty for new quizzes.",
-      },
-      {
-        id: "showHints",
-        label: "Show Hints",
-        type: "checkbox",
-        description: "Enable hints during the quiz.",
+        id: "flipDirection",
+        label: "Flashcards Flip Direction",
+        type: "toggle",
+        options: [
+          { value: "vertical", label: "Vertical" },
+          { value: "horizontal", label: "Horizontal" },
+        ],
+        description: "The direction in which flashcards flip.",
       },
     ],
   },
@@ -125,6 +128,9 @@ async function initApp() {
           break;
         case "import":
           window.location.href = "./import.html";
+          break;
+        case "flashcards":
+          window.location.href = `./flashcards.html?set=${backSet}`;
           break;
         default:
           window.location.href = "./index.html";

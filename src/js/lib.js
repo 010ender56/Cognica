@@ -29,7 +29,6 @@ export async function copy(text) {
   }
 }
 
-// errorMessage should/needs to be defined already when importing this lib
 export function showError(message) {
   if (typeof errorMessage !== "undefined") {
     errorMessage.textContent = message;
@@ -86,7 +85,7 @@ export function createImageUploader(container, onFileSelected) {
 
   input.addEventListener("cancel", () => {
     isCleared = true;
-    input.value = ""; // Clear the input value if the user cancels the file selection
+    input.value = "";
     previewBox.style.backgroundImage = "";
     uploadText.style.display = "block";
   });
@@ -140,7 +139,7 @@ export function createSetTemplate(type = "quiz") {
   }
   
   return {
-    name: "Untitled Quiz",
+    name: type === "flashcards" ? "Untitled Flashcards" : "Untitled Quiz",
     description: "No description provided.",
     image: false,
     questions: [],
@@ -152,7 +151,7 @@ export function createDevQuiz() {
   return {
     name: "DEV QUIZ",
     description:
-      "For testing purposes only. This quiz contains all question types and variants (images, no images).",
+      "For testing purposes only. This quiz contains all question types and variants (images, no images)",
     image: false,
     type: "quiz",
     questions: [
@@ -161,30 +160,10 @@ export function createDevQuiz() {
         text: "What is the capital of France?",
         type: "multiple-choice",
         options: [
-          {
-            text: "London",
-            correct: false,
-            image:
-              "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          },
-          {
-            text: "Berlin",
-            correct: false,
-            image:
-              "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          },
-          {
-            text: "Paris",
-            correct: true,
-            image:
-              "https://images.unsplash.com/photo-1550340499-a6c60fc8287c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          },
-          {
-            text: "Madrid",
-            correct: false,
-            image:
-              "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          },
+          { text: "London", correct: false, image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+          { text: "Berlin", correct: false, image: "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+          { text: "Paris", correct: true, image: "https://images.unsplash.com/photo-1550340499-a6c60fc8287c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+          { text: "Madrid", correct: false, image: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
         ],
         expectedAnswer: "Paris",
         image: null,
@@ -226,8 +205,7 @@ export function createDevQuiz() {
         text: "Describe the process of photosynthesis in detail.",
         type: "long-answer",
         options: [],
-        expectedAnswer:
-          "The process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll pigments.",
+        expectedAnswer: "The process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll pigments.",
         image: null,
       },
       {
@@ -241,8 +219,7 @@ export function createDevQuiz() {
           { text: "Saturn", correct: false },
         ],
         expectedAnswer: "Mars",
-        image:
-          "https://images.unsplash.com/photo-1701014159024-f9781490a228?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: "https://images.unsplash.com/photo-1701014159024-f9781490a228?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
     ],
   };
@@ -263,11 +240,23 @@ export function initState(returnOnly = false) {
     userPrefs: {
       theme: "dark",
       language: "en",
+      
+      defaultSide: "front", // "front" or "back" | for flashcards
+      reducedMotion: false,
+      flipDirection: "vertical", // "vertical" or "horiztonal" | for flashcards
+
+      // keyboard shortcuts
+      shortcuts: {
+        next: "ArrowRight",
+        prev: "ArrowLeft",
+        flip: " "
+      }
     },
     activeSetResponses: {
       questions: {},
     },
     activeSetSubmissions: {},
+    flashcardsProgress: {},
     currentSet: "i0",
     currentIndex: -1,
   };
@@ -294,6 +283,7 @@ export function generateNavbar() {
     "settings.html": "settings",
     "quiz.html": "quiz",
     "editor.html": "editor",
+    "flashcards.html": "flashcards",
   };
 
   const pathname = window.location.pathname;
@@ -323,7 +313,6 @@ export function loadTheme(prefs = "light") {
   const root = document.documentElement;
   let targetTheme = prefs;
 
-  // 1. Handle system default preference
   if (prefs === "system-default") {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     targetTheme = mediaQuery.matches ? "dark" : "light";
@@ -342,20 +331,12 @@ export function loadTheme(prefs = "light") {
 
   root.setAttribute("data-theme", targetTheme);
   root.setAttribute("data-theme-mode", prefs);
-
-  console.log("Loaded theme:", targetTheme, `(${prefs})`);
 }
 
 export function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
-/**
- * STATE MANAGEMENT SYSTEM
- * Intercepts updates to state, handles local persistence,
- * and tracks dirty changes for server syncing.
- */
 
 export async function getState() {
   const state = await localforage.getItem("appState");
@@ -366,11 +347,6 @@ export async function saveFullState(state) {
   await localforage.setItem("appState", state);
 }
 
-/**
- * Updates a value in the state object using a dot-notation path.
- * @param {string} path - e.g., "userPrefs.theme" or "sets.i0.name"
- * @param {any} value - The new value
- */
 export async function updateState(path, value) {
   const state = await getState();
   const keys = path.split(".");
@@ -386,7 +362,6 @@ export async function updateState(path, value) {
   const oldValue = current[lastKey];
   current[lastKey] = value;
 
-  // Only mark dirty and save if value actually changed
   if (JSON.stringify(oldValue) !== JSON.stringify(value)) {
     await saveFullState(state);
     await queueChange(path, value);
@@ -395,13 +370,8 @@ export async function updateState(path, value) {
   return state;
 }
 
-/**
- * Tracks changes that need to be synced to the server.
- */
 export async function queueChange(path, value) {
   const queue = (await localforage.getItem("syncQueue")) || [];
-
-  // Remove any existing pending changes for this same path to avoid redundant updates
   const filteredQueue = queue.filter((item) => item.path !== path);
 
   filteredQueue.push({
@@ -415,17 +385,11 @@ export async function queueChange(path, value) {
   await localforage.setItem("syncQueue", filteredQueue);
 }
 
-/**
- * Returns all items that are currently 'dirty' (not synced).
- */
 export async function getDirtyItems() {
   const queue = (await localforage.getItem("syncQueue")) || [];
   return queue.filter((item) => !item.synced);
 }
 
-/**
- * Marks a specific change as synced.
- */
 export async function markAsSynced(changeId) {
   const queue = (await localforage.getItem("syncQueue")) || [];
   const updatedQueue = queue.map((item) => {
@@ -435,10 +399,6 @@ export async function markAsSynced(changeId) {
   await localforage.setItem("syncQueue", updatedQueue);
 }
 
-/**
- * Placeholder for server sync logic.
- * When implemented, this will iterate through dirty items and push to API.
- */
 export async function syncWithServer() {
   if (!navigator.onLine) {
     console.log("Offline: Sync postponed.");
@@ -449,14 +409,10 @@ export async function syncWithServer() {
   if (dirty.length === 0) return;
 
   console.log(`Syncing ${dirty.length} changes to server...`);
-
-  // Default behavior for now: just mark them as synced since server is not ready
   for (const change of dirty) {
-    // await api.patch(change.path, change.value);
     await markAsSynced(change.id);
   }
   console.log("Sync complete.");
 }
 
-// Listen for online event to trigger sync
 window.addEventListener("online", syncWithServer);

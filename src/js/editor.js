@@ -23,24 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // DOM ELEMENTS
+  const sidebar = document.querySelector(".sidebar");
   const questionListEl = document.querySelector(".question-list");
-  const noQuestionEl = document.createElement("small");
-  noQuestionEl.textContent = "No question yet.";
-  questionListEl.appendChild(noQuestionEl);
-
+  
   const addQuestionBtn = document.getElementById("add-question-btn");
-  const questionTextEl = document.getElementById("questionText");
-  const typeSelectEl = document.getElementById("type");
-  const feedbackSelectEl = document.getElementById("feedback");
-  const requiredCheckEl = document.getElementById("required");
-  const changeableCheckEl = document.getElementById("changeable");
-  const answerOptionsEl = document.querySelector(".answer-options");
-  const addOptionBtn = document.getElementById("add-option-btn");
-  const saveQuestionBtn = document.getElementById("save-question-btn");
   const previewQuizBtn = document.getElementById("preview-set");
   const editQuizBtn = document.getElementById("edit-set");
   const editQuizDialog = document.getElementById("edit-set-dialog");
-  const questionUploader = createImageUploader(document.getElementById("question-uploader"));
   const quizInfoUploader = createImageUploader(document.getElementById("quiz-info-uploader"));
   const quizTitleInput = document.getElementById("quiz-title");
   const quizDescInput = document.getElementById("quiz-desc");
@@ -50,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const deleteSetBtn = document.getElementById("delete-set");
   const quizOnlyOptions = document.getElementById("quiz-only-options");
   const oneWayOnly = document.getElementById("one-way-quiz");
+  const builderPanel = document.getElementById("builder-panel");
 
   // QUESTION TYPE CONFIG
   const QUESTION_TYPES = {
@@ -91,119 +81,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       singleCorrect: false,
       defaultOptions: () => [],
     },
+    "flashcard": {
+      needsOptions: false,
+      singleCorrect: false,
+      defaultOptions: () => [],
+    },
   };
-
-  function renderOptionsUI(question) {
-    answerOptionsEl.innerHTML = "";
-    const cfg = QUESTION_TYPES[question.type];
-
-    if (cfg.needsOptions) {
-      answerOptionsEl.style.display = "flex";
-      addOptionBtn.style.display = "inline-block";
-
-      question.options.forEach((opt, idx) => {
-        const row = document.createElement("div");
-        row.className = "answer-row";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = !!opt.correct;
-        checkbox.addEventListener("change", () => {
-          opt.correct = checkbox.checked;
-        });
-
-        const textInput = document.createElement("input");
-        textInput.type = "text";
-        textInput.placeholder = "Option text...";
-        textInput.value = opt.text || "";
-        textInput.addEventListener("input", () => {
-          opt.text = textInput.value;
-        });
-
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.textContent = "×";
-        removeBtn.classList.add("btn");
-        removeBtn.addEventListener("click", () => {
-          question.options.splice(idx, 1);
-          if (!question.options.length && cfg.needsOptions) {
-            question.options.push({ text: "", correct: false });
-          }
-          renderOptionsUI(question);
-        });
-
-        const imageContainer = document.createElement("div");
-        const uploader = createImageUploader(imageContainer, async (file) => {
-          opt.image = await fileToBase64(file);
-        });
-        if (opt.image) {
-          uploader.previewBox.style.backgroundImage = `url('${opt.image}')`;
-          uploader.uploadText.style.display = "none";
-        }
-
-        row.appendChild(checkbox);
-        row.appendChild(imageContainer);
-        row.appendChild(textInput);
-        row.appendChild(removeBtn);
-        answerOptionsEl.appendChild(row);
-      });
-    } else {
-      answerOptionsEl.style.display = "block";
-      addOptionBtn.style.display = "none";
-      const inputElement =
-        question.type === "long-answer"
-          ? (() => {
-              const ta = document.createElement("textarea");
-              ta.rows = 5;
-              return ta;
-            })()
-          : document.createElement("input");
-      if (question.type === "short-answer") {
-        inputElement.type = "text";
-      }
-      inputElement.placeholder = "Expected answer (optional)…";
-      inputElement.value = question.expectedAnswer || "";
-      inputElement.addEventListener("input", () => {
-        question.expectedAnswer = inputElement.value;
-      });
-      answerOptionsEl.appendChild(inputElement);
-
-      const validationDiv = document.createElement("div");
-      validationDiv.style.marginTop = "10px";
-      validationDiv.innerHTML = "<label>Validation options</label>";
-
-      const vTypeDiv = document.createElement("div");
-      const vType = question.validationType || "text";
-      vTypeDiv.innerHTML = `
-                            <div class="row" style="flex-direction: row; gap: 10px;">
-                                <label><input type="radio" name="qValType" value="text" ${vType === "text" ? "checked" : ""}> Text</label>
-                                <label><input type="radio" name="qValType" value="number" ${vType === "number" ? "checked" : ""}> Number</label>
-                            </div>
-                        `;
-      vTypeDiv.querySelectorAll("input").forEach((i) =>
-        i.addEventListener("change", (e) => {
-          question.validationType = e.target.value;
-        }),
-      );
-
-      const vMode = document.createElement("select");
-      const currentMode = question.validationMode || "exact match";
-      ["Exact Match", "Lazy Match", "Contains", "Regex"].forEach((t) => {
-        const o = document.createElement("option");
-        o.value = t.toLowerCase();
-        o.text = t;
-        if (o.value === currentMode) o.selected = true;
-        vMode.appendChild(o);
-      });
-      vMode.addEventListener("change", (e) => {
-        question.validationMode = e.target.value;
-      });
-
-      validationDiv.appendChild(vTypeDiv);
-      validationDiv.appendChild(vMode);
-      answerOptionsEl.appendChild(validationDiv);
-    }
-  }
 
   function createQuestion(type = "multiple-choice") {
     const cfg = QUESTION_TYPES[type];
@@ -226,7 +109,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return state.sets[state.currentSet]?.questions || [];
   }
 
-  // RENDERING
   function renderSetInfo() {
     const quiz = state.sets[state.currentSet];
     if (!quiz) return;
@@ -249,13 +131,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function renderQuestionList() {
-    questionListEl.querySelectorAll(".question-item").forEach((el) => el.remove());
+    questionListEl.innerHTML = "";
 
     const questions = getQuestions();
+    if (questions.length === 0) {
+      const noQuestionEl = document.createElement("small");
+      noQuestionEl.textContent = "No question yet.";
+      questionListEl.appendChild(noQuestionEl);
+      return;
+    }
+
     questions.forEach((q, idx) => {
       const item = document.createElement("div");
       item.className = "question-item";
-      item.textContent = `Question ${idx + 1}`;
+      item.textContent = `Item ${idx + 1}`;
       item.dataset.id = q.id;
 
       const remove = document.createElement("button");
@@ -269,74 +158,221 @@ document.addEventListener("DOMContentLoaded", async () => {
           questions.splice(index, 1);
           await saveState();
           renderQuestionList();
-          if (state.currentIndex >= questions.length) {
-            state.currentIndex = questions.length - 1;
-          }
-          if (state.currentIndex >= 0) {
-            loadQuestion(state.currentIndex);
-          } else {
-            answerOptionsEl.innerHTML = "";
-            questionTextEl.value = "";
-          }
+          renderBuilder();
         }
       });
 
       item.append(remove);
-      if (idx === state.currentIndex) {
+      if (state.currentIndex === idx) {
         item.style.backgroundColor = "var(--surface-lighter)";
         item.style.borderColor = "var(--accent)";
       }
-      questionListEl.insertBefore(item, noQuestionEl);
+      questionListEl.appendChild(item);
     });
-    noQuestionEl.style.display = questions.length ? "none" : "block";
   }
 
-  function loadQuestion(index) {
+  // quiz
+  function renderQuizBuilder(index) {
     const questions = getQuestions();
-    if (index < 0 || index >= questions.length) return;
+    if (index < 0 || index >= questions.length) {
+      builderPanel.innerHTML = `<h1>No selected question</h1><p>Select a question to edit</p>`;
+      return;
+    }
+
     state.currentIndex = index;
     const q = questions[index];
-    questionTextEl.value = q.text || "";
-    typeSelectEl.value = q.type;
-    feedbackSelectEl.value = q.feedback || "submitted";
-    requiredCheckEl.checked = !!q.required;
-    changeableCheckEl.checked = q.changeable !== false;
 
+    builderPanel.innerHTML = `
+        <div class="builder-section">
+            <label for="questionText">Question Text</label>
+            <div class="row" style="flex-direction: row; align-items: start;">
+                <div class="uploader-container" id="question-uploader"></div>
+                <textarea id="questionText" placeholder="Enter your question here..." style="flex: 1;">${q.text || ""}</textarea>
+            </div>
+        </div>
+        <div class="builder-section">
+            <label for="type">Answer Type</label>
+            <select id="type">
+                <option value="multiple-choice" ${q.type === 'multiple-choice' ? 'selected' : ''}>Multiple Choice</option>
+                <option value="multiple-response" ${q.type === 'multiple-response' ? 'selected' : ''}>Multiple Response</option>
+                <option value="true-false" ${q.type === 'true-false' ? 'selected' : ''}>True or False</option>
+                <option value="short-answer" ${q.type === 'short-answer' ? 'selected' : ''}>Short Answer</option>
+                <option value="long-answer" ${q.type === 'long-answer' ? 'selected' : ''}>Long Answer</option>
+            </select>
+        </div>
+        <div class="builder-section">
+            <label for="feedback">Feedback Mode</label>
+            <select id="feedback">
+                <option value="show_correct" ${q.feedback === 'show_correct' ? 'selected' : ''}>Wrong/Right/Partially (Show Correct Answer)</option>
+                <option value="hide_correct" ${q.feedback === 'hide_correct' ? 'selected' : ''}>Wrong/Right/Partially (Hide Correct Answer)</option>
+                <option value="submitted" ${q.feedback === 'submitted' ? 'selected' : ''}>Submitted (No Feedback)</option>
+            </select>
+        </div>
+        <div class="builder-section">
+            <div class="row" style="flex-direction: row; gap: 20px;">
+                <label><input type="checkbox" id="required" ${q.required ? 'checked' : ''}> Required Question</label>
+                <label><input type="checkbox" id="changeable" ${q.changeable !== false ? 'checked' : ''}> Changeable after submission</label>
+            </div>
+        </div>
+        <div class="builder-section">
+            <label>Answer Options</label>
+            <div class="answer-options"></div>
+            <button class="btn" id="add-option-btn">+ Add Option</button>
+        </div>
+        <button class="cta" id="save-question-btn">Save Question</button>
+    `;
+
+    const uploader = createImageUploader(document.getElementById("question-uploader"), async (file) => {
+      q.image = await fileToBase64(file);
+    });
     if (q.image) {
-      questionUploader.previewBox.style.backgroundImage = `url('${q.image}')`;
-      questionUploader.uploadText.style.display = "none";
-    } else {
-      questionUploader.previewBox.style.backgroundImage = "";
-      questionUploader.uploadText.style.display = "block";
+      uploader.previewBox.style.backgroundImage = `url('${q.image}')`;
+      uploader.uploadText.style.display = "none";
     }
-    questionUploader.input.value = "";
-    questionUploader.resetCleared();
 
-    renderOptionsUI(q);
-    renderQuestionList();
+    const qText = document.getElementById("questionText");
+    const typeSel = document.getElementById("type");
+    const feedSel = document.getElementById("feedback");
+    const reqCheck = document.getElementById("required");
+    const chanCheck = document.getElementById("changeable");
+    const optContainer = document.querySelector(".answer-options");
+    const addOptBtn = document.getElementById("add-option-btn");
+    const saveBtn = document.getElementById("save-question-btn");
+
+    qText.addEventListener("input", () => { q.text = qText.value.trim(); });
+    typeSel.addEventListener("change", () => {
+      q.type = typeSel.value;
+      q.options = QUESTION_TYPES[q.type].defaultOptions();
+      renderOptionsUI_Legacy(q);
+    });
+    feedSel.addEventListener("change", () => { q.feedback = feedSel.value; });
+    reqCheck.addEventListener("change", () => { q.required = reqCheck.checked; });
+    chanCheck.addEventListener("change", () => { q.changeable = chanCheck.checked; });
+
+    function renderOptionsUI_Legacy(question) {
+      optContainer.innerHTML = "";
+      const cfg = QUESTION_TYPES[question.type];
+      if (cfg.needsOptions) {
+        question.options.forEach((opt, idx) => {
+          const row = document.createElement("div");
+          row.className = "answer-row";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = !!opt.correct;
+          cb.addEventListener("change", () => { opt.correct = cb.checked; });
+          const ti = document.createElement("input");
+          ti.type = "text";
+          ti.value = opt.text || "";
+          ti.addEventListener("input", () => { opt.text = ti.value; });
+          const rb = document.createElement("button");
+          rb.textContent = "×";
+          rb.classList.add("btn");
+          rb.addEventListener("click", () => {
+            question.options.splice(idx, 1);
+            renderOptionsUI_Legacy(question);
+          });
+          row.append(cb, ti, rb);
+          optContainer.appendChild(row);
+        });
+      } else {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = question.expectedAnswer || "";
+        input.addEventListener("input", () => { question.expectedAnswer = input.value; });
+        optContainer.appendChild(input);
+      }
+    }
+
+    renderOptionsUI_Legacy(q);
+    addOptBtn.addEventListener("click", () => {
+      if (QUESTION_TYPES[q.type].needsOptions) {
+        q.options.push({ text: "", correct: false });
+        renderOptionsUI_Legacy(q);
+      }
+    });
+    saveBtn.addEventListener("click", async () => {
+      await saveState();
+      alert("Saved!");
+    });
   }
 
-  async function saveCurrentQuestion() {
+  // flashcards
+  function renderFlashcardBuilder() {
     const questions = getQuestions();
-    if (state.currentIndex < 0 || state.currentIndex >= questions.length) return;
-    const q = questions[state.currentIndex];
+    builderPanel.innerHTML = `
+        <div class="flashcard-builder-list">
+            ${questions.map((q, idx) => `
+                <div class="flashcard-edit-row" data-id="${q.id}" data-index="${idx}">
+                    <div class="fc-field">
+                        <label>Front</label>
+                        <textarea class="fc-front" placeholder="Enter term...">${q.text || ""}</textarea>
+                    </div>
+                    <div class="fc-field">
+                        <label>Back</label>
+                        <textarea class="fc-back" placeholder="Enter definition...">${q.expectedAnswer || ""}</textarea>
+                    </div>
+                    <div class="fc-field fc-image-field">
+                        <label>Image</label>
+                        <div class="uploader-container fc-uploader"></div>
+                    </div>
+                    <button class="btn danger remove-card">×</button>
+                </div>
+            `).join("")}
+        </div>
+    `;
 
-    q.type = typeSelectEl.value;
-    q.feedback = feedbackSelectEl.value;
-    q.required = requiredCheckEl.checked;
-    q.changeable = changeableCheckEl.checked;
-    q.text = questionTextEl.value.trim();
+    questions.forEach((q, idx) => {
+      const row = builderPanel.querySelector(`.flashcard-edit-row[data-index="${idx}"]`);
+      if (!row) return;
+      const frontT = row.querySelector(".fc-front");
+      const backT = row.querySelector(".fc-back");
+      const uploaderContainer = row.querySelector(".fc-uploader");
 
-    const questionFile = questionUploader.getFile();
-    if (questionFile) {
-      q.image = await fileToBase64(questionFile);
-    } else if (questionUploader.getIsCleared()) {
-      q.image = null;
+      frontT.addEventListener("input", async () => {
+        q.text = frontT.value.trim();
+        await saveState();
+      });
+      backT.addEventListener("input", async () => {
+        q.expectedAnswer = backT.value.trim();
+        await saveState();
+      });
+
+      const uploader = createImageUploader(uploaderContainer, async (file) => {
+        q.image = await fileToBase64(file);
+        await saveState();
+      });
+      if (q.image) {
+        uploader.previewBox.style.backgroundImage = `url('${q.image}')`;
+        uploader.uploadText.style.display = "none";
+      }
+
+      row.querySelector(".remove-card").addEventListener("click", async () => {
+        questions.splice(idx, 1);
+        await saveState();
+        renderFlashcardBuilder();
+        renderQuestionList();
+      });
+    });
+  }
+
+  function renderBuilder() {
+    const type = state.sets[state.currentSet]?.type;
+    if (type === "flashcards") {
+      questionListEl.style.display = "none";
+      builderPanel.style.width = "100%";
+      renderFlashcardBuilder();
+    } else {
+      questionListEl.style.display = "flex";
+      builderPanel.style.width = "80vw";
+      const questions = getQuestions();
+      if (questions.length === 0) {
+        builderPanel.innerHTML = `<h1>No questions yet</h1><p>Click "Add Question" to create your first question.</p>`;
+      } else if (state.currentIndex === undefined || state.currentIndex < 0) {
+        builderPanel.innerHTML = `<h1>No selected question</h1><p>Please select a question to edit</p>`;
+      } else {
+        renderQuizBuilder(state.currentIndex);
+      }
     }
-    questionUploader.resetCleared();
-
-    await saveState();
-    renderQuestionList();
   }
 
   // EVENTS
@@ -346,65 +382,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   addQuestionBtn.addEventListener("click", async () => {
-    const newQ = createQuestion(typeSelectEl.value);
+    const type = state.sets[state.currentSet]?.type === "flashcards" ? "flashcard" : "multiple-choice";
+    const newQ = createQuestion(type);
     const questions = getQuestions();
     questions.push(newQ);
     await saveState();
-    loadQuestion(questions.length - 1);
+    renderQuestionList();
+    renderBuilder();
   });
 
-  saveQuestionBtn.addEventListener("click", async () => {
-    await saveCurrentQuestion();
-    alert("Question saved!");
-  });
-
-  questionListEl.addEventListener("click", async (e) => {
+  questionListEl.addEventListener("click", (e) => {
     const item = e.target.closest(".question-item");
-    if (!item) return;
+    if (!item || state.sets[state.currentSet]?.type === "flashcards") return;
 
-    await saveCurrentQuestion();
     const id = item.dataset.id;
     const questions = getQuestions();
     const idx = questions.findIndex((q) => q.id === id);
     if (idx !== -1) {
-      loadQuestion(idx);
+      state.currentIndex = idx;
+      renderQuestionList();
+      renderBuilder();
     }
-  });
-
-  typeSelectEl.addEventListener("change", () => {
-    if (state.currentIndex < 0 || state.currentIndex >= getQuestions().length) return;
-
-    const q = getQuestions()[state.currentIndex];
-    const newType = typeSelectEl.value;
-    const cfg = QUESTION_TYPES[newType];
-
-    q.type = newType;
-    q.options = cfg.defaultOptions();
-    renderOptionsUI(q);
-  });
-
-  addOptionBtn.addEventListener("click", () => {
-    if (state.currentIndex < 0 || state.currentIndex >= getQuestions().length) return;
-
-    const q = getQuestions()[state.currentIndex];
-    const cfg = QUESTION_TYPES[q.type];
-    if (!cfg.needsOptions) return;
-    q.options.push({ text: "", correct: false });
-    renderOptionsUI(q);
-  });
-
-  quizDescInput.addEventListener("input", function () {
-    const length = this.value.length;
-    const maxLength = this.maxLength;
-    quizDescChars.textContent = `${length}/${maxLength}`;
-    quizDescChars.style.color = length >= maxLength ? "red" : "var(--text)";
   });
 
   saveQuizInfoBtn.addEventListener("click", async () => {
     const quiz = state.sets[state.currentSet];
     quiz.name = quizTitleInput.value.trim();
     quiz.description = quizDescInput.value.trim();
-
     const quizFile = quizInfoUploader.getFile();
     if (quizFile) {
       quiz.image = await fileToBase64(quizFile);
@@ -413,9 +417,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     quizInfoUploader.resetCleared();
     quiz.oneWay = !oneWayOnly.checked;
-
     await saveState();
     editQuizDialog.close();
+    renderBuilder();
   });
 
   deleteSetBtn.addEventListener("click", async () => {
@@ -438,18 +442,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (confirm("Changing type will reset questions. Continue?")) {
       state.sets[state.currentSet].type = quizTypeSelect.value;
       await saveState();
+      renderBuilder();
     } else {
       quizTypeSelect.value = state.sets[state.currentSet].type;
     }
   });
 
   previewQuizBtn.addEventListener("click", () => {
-    window.location.href = `./quiz.html?set=${state.currentSet}&preview`;
+    if (state.sets[state.currentSet].type === "flashcards") {
+      window.location.href = `./flashcards.html?set=${state.currentSet}&mode=review`; // review mode for preview
+    } else {
+      window.location.href = `./quiz.html?set=${state.currentSet}&preview`;
+    }
   });
 
-  // INITIALIZE
   async function initializeApp() {
-    // load theme
     loadTheme(state.userPrefs.theme);
     const setParam = new URLSearchParams(window.location.search).get("set");
     if (setParam) {
@@ -468,13 +475,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!state.sets[state.currentSet].questions?.length) {
-      state.sets[state.currentSet].questions = [createQuestion()];
+      state.sets[state.currentSet].questions = [createQuestion(state.sets[state.currentSet].type === "flashcards" ? "flashcard" : "multiple-choice")];
       await saveState();
     }
 
     renderSetInfo();
     renderQuestionList();
-    loadQuestion(0);
+    renderBuilder();
   }
 
   await initializeApp();

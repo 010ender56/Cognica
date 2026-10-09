@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Quiz Creator</title>
+        <title>Editor</title>
         <link rel="stylesheet" href="/css/style.css" />
         <link rel="stylesheet" href="/css/editor.css" />
     </head>
@@ -61,62 +61,8 @@
                 <button class="cta" id="add-question-btn">+ Question</button>
             </aside>
 
-            <section class="builder-panel">
-                <div class="builder-section">
-                    <label for="questionText">Question Text</label>
-                    <div class="row" style="flex-direction: row; align-items: start;">
-                        <div class="uploader-container" id="question-uploader"></div>
-                        <textarea
-                            id="questionText"
-                            placeholder="Enter your question here..."
-                            style="flex: 1;"
-                        ></textarea>
-                    </div>
-                </div>
-                <div class="builder-section">
-                    <label for="type">Answer Type</label>
-                    <select name="answer-type" id="type">
-                        <option value="multiple-choice">Multiple Choice</option>
-                        <option value="multiple-response">Multiple Response</option>
-                        <option value="true-false">True or False</option>
-                        <option value="short-answer">Short Answer</option>
-                        <option value="long-answer">Long Answer</option>
-                        <option value="match" disabled>Matching</option>
-                        <option value="fill-blanks" disabled>Fill in the Blanks</option>
-                    </select>
-                </div>
-
-                <div class="builder-section">
-                    <label for="feedback">Feedback Mode</label>
-                    <select id="feedback">
-                        <option value="show_correct">Wrong/Right/Partially (Show Correct Answer)</option>
-                        <option value="hide_correct">Wrong/Right/Partially (Hide Correct Answer)</option>
-                        <option value="submitted">Submitted (No Feedback)</option>
-                    </select>
-                </div>
-
-                <div class="builder-section">
-                    <div class="row" style="flex-direction: row; gap: 20px;">
-                        <label>
-                            <input type="checkbox" id="required"> Required Question
-                        </label>
-                        <label>
-                            <input type="checkbox" id="changeable"> Changeable after submission
-                        </label>
-                    </div>
-                </div>
-
-                <div class="builder-section">
-                    <label>Answer Options</label>
-
-                    <div class="answer-options">
-                        <!-- populate -->
-                    </div>
-
-                    <button class="btn" id="add-option-btn">+ Add Option</button>
-                </div>
-
-                <button class="cta" id="save-question-btn">Save Question</button>
+            <section class="builder-panel" id="builder-panel">
+                <!-- Content injected via JS based on set type -->
             </section>
         </div>
 

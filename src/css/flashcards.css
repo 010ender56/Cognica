@@ -1,0 +1,200 @@
+.flashcard {
+    position: absolute;
+    cursor: pointer;
+    width: 50vw;
+    height: 50vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    perspective: 1000px;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface-lighter);
+    border-radius: 20px;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Horizontal Flip */
+.flashcard.flip-horizontal .flashcard-back {
+    transform: rotateY(180deg);
+}
+.flashcard.flip-horizontal.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+/* Vertical Flip */
+.flashcard.flip-vertical .flashcard-back {
+    transform: rotateX(180deg);
+}
+.flashcard.flip-vertical.flipped .flashcard-inner {
+    transform: rotateX(180deg);
+}
+
+@keyframes slideInNext {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateX(0);
+    }
+}
+
+@keyframes slideInPrev {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateX(0);
+    }
+}
+
+.slide-in-next {
+    animation: slideInNext 0.3s ease-out forwards;
+}
+
+.slide-in-prev {
+    animation: slideInPrev 0.3s ease-out forwards;
+}
+
+/* Reduced Motion */
+.flashcard.no-animation .flashcard-inner {
+    transition: none;
+}
+.flashcard.no-animation {
+    animation: none !important;
+}
+
+img {
+    margin-bottom: 50px;
+    max-width: 60%;
+    border-radius: 20px;
+}
+
+.controls, .rating-controls, .finished-screen {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 40vw;
+    bottom: 20vh;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.controls {
+    justify-content: space-between;
+    width: 25vw;
+}
+
+.rating-controls {
+    gap: 20px;
+    align-items: center;
+}
+
+#cram-undo-btn {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.finished-screen {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.finished-content {
+    background-color: var(--card);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--border-main);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+}
+
+.finished-content h1 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.analytics {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.finished-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-danger {
+    background-color: var(--red);
+    color: var(--card);
+    border: 1px solid var(--red);
+}
+
+.btn-danger:hover {
+    background-color: var(--red-strong, var(--red));
+    filter: brightness(0.9);
+}
+
+.btn-success {
+    background-color: #22c55e;
+    color: white;
+    border: 1px solid #16a34a;
+}
+
+.btn-success:hover {
+    background-color: #16a34a;
+}
+
+#undo-btn {
+    /* this button is smaller since it is an icon */
+    left: 0;
+    width: 30px;
+    height: 30px;
+}

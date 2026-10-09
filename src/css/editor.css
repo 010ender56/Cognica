@@ -170,9 +170,8 @@ dialog {
 
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.4);
-
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    -webkit-backdrop-filter: blur(5px);
 }
 
 dialog h3 {
@@ -204,4 +203,72 @@ dialog h3 {
 .row label {
     font-size: 0.875rem;
     font-weight: 500;
+}
+
+/* Flashcard Editor Styles */
+.flashcard-builder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+.flashcard-edit-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-main);
+    border-radius: 12px;
+    position: relative;
+    transition: border-color 0.2s ease;
+}
+
+.flashcard-edit-row:hover {
+    border-color: var(--accent);
+}
+
+.fc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.fc-field label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--muted-foreground);
+}
+
+.fc-field textarea {
+    min-height: 60px;
+    height: 60px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-main);
+    background: var(--card);
+    color: var(--foreground);
+    resize: none;
+}
+
+.fc-image-field {
+    flex: 0 0 120px;
+}
+
+.fc-image-field .uploader-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+.fc-image-field .drop-zone {
+    height: 60px;
+}
+
+.remove-card {
+    flex: 0 0 40px;
+    height: 40px;
+    border-radius: 8px;
 }

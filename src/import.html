@@ -12,12 +12,43 @@
 
         <header>
             <h1>Import</h1>
-            <p>Import your existing quizzes or data into Cognica.</p>
+            <p>Import your existing flashcards into Cognica.</p>
         </header>
 
         <main>
-            <button class="btn" id="back" onclick="window.location.href = './index.html'">Cancel</button>
-            
+            <div class="import-container">
+                <div class="import-group">
+                    <label>Import Method</label>
+                    <div class="import-methods">
+                        <button class="btn method-btn active" id="method-paste">Paste Text</button>
+                        <button class="btn method-btn" id="method-file">Upload File</button>
+                    </div>
+                </div>
+
+                <div id="paste-section" class="import-section active">
+                    <div class="import-group">
+                        <label for="import-text">Flashcards Data</label>
+                        <textarea id="import-text" placeholder="Paste your flashcards here...&#10;Example (Tab): Term\tDefinition&#10;Example (Comma): Term,Definition;"></textarea>
+                    </div>
+                </div>
+
+                <div id="file-section" class="import-section">
+                    <div class="import-group">
+                        <label>Select File</label>
+                        <div id="drop-zone" class="drop-zone">
+                            <p>Drag & drop a .txt or .csv file here</p>
+                            <span>or</span>
+                            <button class="btn" id="browse-btn">Browse Files</button>
+                            <input type="file" id="file-input" accept=".txt,.csv" style="display: none;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="import-actions">
+                    <button class="btn" id="back" onclick="window.location.href = './index.html'">Cancel</button>
+                    <button class="btn btn-primary" id="import-btn">Import Flashcards</button>
+                </div>
+            </div>
         </main>
 
         <script src="/js/import.js" type="module"></script>

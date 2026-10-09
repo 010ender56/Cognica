@@ -1,4 +1,75 @@
-            body {
-                position: relative;
-                min-height: 100vh;
-            }
+.import-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.import-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.import-group label {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.import-methods {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.method-btn.active {
+    background-color: var(--accent);
+    color: var(--foreground);
+}
+
+.import-section {
+    display: none;
+}
+
+.import-section.active {
+    display: block;
+}
+
+#import-text {
+    width: 100%;
+    height: 300px;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+    font-family: monospace;
+    resize: vertical;
+}
+
+.drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: var(--card);
+    color: var(--muted-foreground);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.drop-zone.drag-over {
+    border-color: var(--accent);
+    background-color: rgba(var(--accent-rgb), 0.1);
+    color: var(--foreground);
+}
+
+.import-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}

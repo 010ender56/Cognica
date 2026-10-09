@@ -86,8 +86,7 @@ async function initApp() {
   });
 
   createFromImportBtn.addEventListener("click", () => {
-    alert("feature not implemented yet");
-    alert("You must wait until 2099999 to use this feature!");
+    window.location.href = "./import.html";
   });
 
   createFlashcardsBtn.addEventListener("click", () => {
